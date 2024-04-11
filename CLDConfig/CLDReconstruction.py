@@ -143,84 +143,6 @@ Overlay["365GeV"].Parameters |= {
                             "NumberBackground": ["1."],
                             }
 
-VXDBarrelDigitiser = MarlinProcessorWrapper("VXDBarrelDigitiser")
-VXDBarrelDigitiser.OutputLevel = WARNING
-VXDBarrelDigitiser.ProcessorType = "DDPlanarDigiProcessor"
-VXDBarrelDigitiser.Parameters = {
-                                 "IsStrip": ["false"],
-                                 "ResolutionU": ["0.003", "0.003", "0.003", "0.003", "0.003", "0.003"],
-                                 "ResolutionV": ["0.003", "0.003", "0.003", "0.003", "0.003", "0.003"],
-                                 "SimTrackHitCollectionName": ["VertexBarrelCollection"],
-                                 "SimTrkHitRelCollection": ["VXDTrackerHitRelations"],
-                                 "SubDetectorName": ["Vertex"],
-                                 "TrackerHitCollectionName": ["VXDTrackerHits"]
-                                 }
-
-VXDEndcapDigitiser = MarlinProcessorWrapper("VXDEndcapDigitiser")
-VXDEndcapDigitiser.OutputLevel = WARNING
-VXDEndcapDigitiser.ProcessorType = "DDPlanarDigiProcessor"
-VXDEndcapDigitiser.Parameters = {
-                                 "IsStrip": ["false"],
-                                 "ResolutionU": ["0.003", "0.003", "0.003", "0.003", "0.003", "0.003"],
-                                 "ResolutionV": ["0.003", "0.003", "0.003", "0.003", "0.003", "0.003"],
-                                 "SimTrackHitCollectionName": ["VertexEndcapCollection"],
-                                 "SimTrkHitRelCollection": ["VXDEndcapTrackerHitRelations"],
-                                 "SubDetectorName": ["Vertex"],
-                                 "TrackerHitCollectionName": ["VXDEndcapTrackerHits"]
-                                 }
-
-InnerPlanarDigiProcessor = MarlinProcessorWrapper("InnerPlanarDigiProcessor")
-InnerPlanarDigiProcessor.OutputLevel = WARNING
-InnerPlanarDigiProcessor.ProcessorType = "DDPlanarDigiProcessor"
-InnerPlanarDigiProcessor.Parameters = {
-                                       "IsStrip": ["false"],
-                                       "ResolutionU": ["0.007"],
-                                       "ResolutionV": ["0.09"],
-                                       "SimTrackHitCollectionName": ["InnerTrackerBarrelCollection"],
-                                       "SimTrkHitRelCollection": ["InnerTrackerBarrelHitsRelations"],
-                                       "SubDetectorName": ["InnerTrackers"],
-                                       "TrackerHitCollectionName": ["ITrackerHits"]
-                                       }
-
-InnerEndcapPlanarDigiProcessor = MarlinProcessorWrapper("InnerEndcapPlanarDigiProcessor")
-InnerEndcapPlanarDigiProcessor.OutputLevel = WARNING
-InnerEndcapPlanarDigiProcessor.ProcessorType = "DDPlanarDigiProcessor"
-InnerEndcapPlanarDigiProcessor.Parameters = {
-                                             "IsStrip": ["false"],
-                                             "ResolutionU": ["0.005", "0.007", "0.007", "0.007", "0.007", "0.007", "0.007"],
-                                             "ResolutionV": ["0.005", "0.09", "0.09", "0.09", "0.09", "0.09", "0.09"],
-                                             "SimTrackHitCollectionName": ["InnerTrackerEndcapCollection"],
-                                             "SimTrkHitRelCollection": ["InnerTrackerEndcapHitsRelations"],
-                                             "SubDetectorName": ["InnerTrackers"],
-                                             "TrackerHitCollectionName": ["ITrackerEndcapHits"]
-                                             }
-
-OuterPlanarDigiProcessor = MarlinProcessorWrapper("OuterPlanarDigiProcessor")
-OuterPlanarDigiProcessor.OutputLevel = WARNING
-OuterPlanarDigiProcessor.ProcessorType = "DDPlanarDigiProcessor"
-OuterPlanarDigiProcessor.Parameters = {
-                                       "IsStrip": ["false"],
-                                       "ResolutionU": ["0.007", "0.007", "0.007"],
-                                       "ResolutionV": ["0.09", "0.09", "0.09"],
-                                       "SimTrackHitCollectionName": ["OuterTrackerBarrelCollection"],
-                                       "SimTrkHitRelCollection": ["OuterTrackerBarrelHitsRelations"],
-                                       "SubDetectorName": ["OuterTrackers"],
-                                       "TrackerHitCollectionName": ["OTrackerHits"]
-                                       }
-
-OuterEndcapPlanarDigiProcessor = MarlinProcessorWrapper("OuterEndcapPlanarDigiProcessor")
-OuterEndcapPlanarDigiProcessor.OutputLevel = WARNING
-OuterEndcapPlanarDigiProcessor.ProcessorType = "DDPlanarDigiProcessor"
-OuterEndcapPlanarDigiProcessor.Parameters = {
-                                             "IsStrip": ["false"],
-                                             "ResolutionU": ["0.007", "0.007", "0.007", "0.007", "0.007"],
-                                             "ResolutionV": ["0.09", "0.09", "0.09", "0.09", "0.09"],
-                                             "SimTrackHitCollectionName": ["OuterTrackerEndcapCollection"],
-                                             "SimTrkHitRelCollection": ["OuterTrackerEndcapHitsRelations"],
-                                             "SubDetectorName": ["OuterTrackers"],
-                                             "TrackerHitCollectionName": ["OTrackerEndcapHits"]
-                                             }
-
 MyTruthTrackFinder = MarlinProcessorWrapper("MyTruthTrackFinder")
 MyTruthTrackFinder.OutputLevel = WARNING
 MyTruthTrackFinder.ProcessorType = "TruthTrackFinder"
@@ -1040,12 +962,7 @@ EventNumber.Parameters = {
 algList.append(MyAIDAProcessor)
 algList.append(Overlay[CONFIG["Overlay"]])
 # tracker hit digitisation
-algList.append(VXDBarrelDigitiser)
-algList.append(VXDEndcapDigitiser)
-algList.append(InnerPlanarDigiProcessor)
-algList.append(InnerEndcapPlanarDigiProcessor)
-algList.append(OuterPlanarDigiProcessor)
-algList.append(OuterEndcapPlanarDigiProcessor)
+sequenceLoader.load("Tracking/TrackingDigi")
 
 # tracking
 if CONFIG["Tracking"] == "Truth":
