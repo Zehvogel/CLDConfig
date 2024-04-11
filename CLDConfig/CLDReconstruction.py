@@ -147,19 +147,6 @@ Overlay["365GeV"].Parameters |= {
                             "NumberBackground": ["1."],
                             }
 
-MyTruthTrackFinder = MarlinProcessorWrapper("MyTruthTrackFinder")
-MyTruthTrackFinder.OutputLevel = WARNING
-MyTruthTrackFinder.ProcessorType = "TruthTrackFinder"
-MyTruthTrackFinder.Parameters = {
-                                 "FitForward": ["true"],
-                                 "MCParticleCollectionName": ["MCParticle"],
-                                 "SiTrackCollectionName": ["SiTracks"],
-                                 "SiTrackRelationCollectionName": ["SiTrackRelations"],
-                                 "SimTrackerHitRelCollectionNames": ["VXDTrackerHitRelations", "InnerTrackerBarrelHitsRelations", "OuterTrackerBarrelHitsRelations", "VXDEndcapTrackerHitRelations", "InnerTrackerEndcapHitsRelations", "OuterTrackerEndcapHitsRelations"],
-                                 "TrackerHitCollectionNames": ["VXDTrackerHits", "ITrackerHits", "OTrackerHits", "VXDEndcapTrackerHits", "ITrackerEndcapHits", "OTrackerEndcapHits"],
-                                 "UseTruthInPrefit": ["false"]
-                                 }
-
 Refit = MarlinProcessorWrapper("Refit")
 Refit.OutputLevel = WARNING
 Refit.ProcessorType = "RefitFinal"
@@ -890,7 +877,7 @@ sequenceLoader.load("Tracking/TrackingDigi")
 
 # tracking
 if CONFIG["Tracking"] == "Truth":
-    algList.append(MyTruthTrackFinder)
+    sequenceLoader.load("Tracking/TruthTracking")
 elif CONFIG["Tracking"] == "Conformal":
     sequenceLoader.load("Tracking/ConformalTracking")
 
