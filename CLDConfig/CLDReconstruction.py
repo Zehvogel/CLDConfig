@@ -177,18 +177,6 @@ MyTrackChecker.Parameters = {
                              "UseOnlyTree": ["true"]
                              }
 
-MyDDSimpleMuonDigi = MarlinProcessorWrapper("MyDDSimpleMuonDigi")
-MyDDSimpleMuonDigi.OutputLevel = WARNING
-MyDDSimpleMuonDigi.ProcessorType = "DDSimpleMuonDigi"
-MyDDSimpleMuonDigi.Parameters = {
-                                 "CalibrMUON": ["70.1"],
-                                 "MUONCollections": ["YokeBarrelCollection", "YokeEndcapCollection"],
-                                 "MUONOutputCollection": ["MUON"],
-                                 "MaxHitEnergyMUON": ["2.0"],
-                                 "MuonThreshold": ["1e-06"],
-                                 "RelationOutputCollection": ["RelationMuonHit"]
-                                 }
-
 MyStatusmonitor = MarlinProcessorWrapper("MyStatusmonitor")
 MyStatusmonitor.OutputLevel = WARNING
 MyStatusmonitor.ProcessorType = "Statusmonitor"
@@ -238,32 +226,6 @@ MyHitResiduals.Parameters = {
                              "outFileName": ["residuals.root"],
                              "treeName": ["restree"]
                              }
-
-LumiCalReco = MarlinProcessorWrapper("LumiCalReco")
-LumiCalReco.OutputLevel = WARNING
-LumiCalReco.ProcessorType = "MarlinLumiCalClusterer"
-LumiCalReco.Parameters = {
-                          "ClusterMinNumHits": ["15"],
-                          "ElementsPercentInShowerPeakLayer": ["0.03"],
-                          "EnergyCalibConst": ["0.01213"],
-                          "LogWeigthConstant": ["6.5"],
-                          "LumiCal_Clusters": ["LumiCalClusters"],
-                          "LumiCal_Collection": ["LumiCalCollection"],
-                          "LumiCal_RecoParticles": ["LumiCalRecoParticles"],
-                          "MaxRecordNumber": ["10"],
-                          "MemoryResidentTree": ["0"],
-                          "MiddleEnergyHitBoundFrac": ["0.01"],
-                          "MinClusterEngy": ["2.0"],
-                          "MinHitEnergy": ["20e-06"],
-                          "MoliereRadius": ["20"],
-                          "NumEventsTree": ["500"],
-                          "NumOfNearNeighbor": ["6"],
-                          "OutDirName": ["rootOut"],
-                          "OutRootFileName": [],
-                          "SkipNEvents": ["0"],
-                          "WeightingMethod": ["LogMethod"],
-                          "ZLayerPhiOffset": ["0.0"]
-                          }
 
 RenameCollection = MarlinProcessorWrapper("RenameCollection")
 RenameCollection.OutputLevel = WARNING
@@ -349,112 +311,6 @@ JetClusteringAndRefiner.Parameters = {
                                       "UseMCP": ["0"]
                                       }
 
-MyDDCaloDigiParameters = {
-                                "Histograms": ["0"],
-                                "RootFile": ["Digi_SiW.root"],
-                                "RelationOutputCollection": ["RelationCaloHit"],
-                                "energyPerEHpair": ["3.6"],
-                                # ECAL
-                                "ECALCollections": ["ECalBarrelCollection", "ECalEndcapCollection"],
-                                "ECALOutputCollection0": ["ECALBarrel"],
-                                "ECALOutputCollection1": ["ECALEndcap"],
-                                "ECALOutputCollection2": [""],
-                                "IfDigitalEcal": ["0"],
-                                "ECALLayers": ["41", "100"],
-                                "ECAL_default_layerConfig": ["000000000000000"],
-                                "StripEcal_default_nVirtualCells": ["9"],
-                                "CalibECALMIP": ["0.0001"],
-                                "ECALThreshold": ["5e-05"],
-                                "ECALThresholdUnit": ["GeV"],
-                                "ECALGapCorrection": ["1"],
-                                "ECALGapCorrectionFactor": ["1"],
-                                "ECALModuleGapCorrectionFactor": ["0.0"],
-                                "MapsEcalCorrection": ["0"],
-                                "ECAL_PPD_N_Pixels": ["10000"],
-                                "ECAL_PPD_N_Pixels_uncertainty": ["0.05"],
-                                "ECAL_PPD_PE_per_MIP": ["7"],
-                                "ECAL_apply_realistic_digi": ["0"],
-                                "ECAL_deadCellRate": ["0"],
-                                "ECAL_deadCell_memorise": ["false"],
-                                "ECAL_elec_noise_mips": ["0"],
-                                "ECAL_maxDynamicRange_MIP": ["2500"],
-                                "ECAL_miscalibration_correl": ["0"],
-                                "ECAL_miscalibration_uncorrel": ["0"],
-                                "ECAL_miscalibration_uncorrel_memorise": ["false"],
-                                "ECAL_pixel_spread": ["0.05"],
-                                "ECAL_strip_absorbtionLength": ["1e+06"],
-                                "UseEcalTiming": ["1"],
-                                "ECALCorrectTimesForPropagation": ["1"],
-                                "ECALTimeWindowMin": ["-1"],
-                                "ECALSimpleTimingCut": ["true"],
-                                "ECALDeltaTimeHitResolution": ["10"],
-                                "ECALTimeResolution": ["10"],
-                                # HCAL
-                                "HCALCollections": ["HCalBarrelCollection", "HCalEndcapCollection", "HCalRingCollection"],
-                                "HCALOutputCollection0": ["HCALBarrel"],
-                                "HCALOutputCollection1": ["HCALEndcap"],
-                                "HCALOutputCollection2": ["HCALOther"],
-                                "IfDigitalHcal": ["0"],
-                                "HCALLayers": ["100"],
-                                "CalibHCALMIP": ["0.0001"],
-                                "HCALThreshold": ["0.00025"],
-                                "HCALThresholdUnit": ["GeV"],
-                                "HCALEndcapCorrectionFactor": ["1.000"],
-                                "HCALGapCorrection": ["1"],
-                                "HCALModuleGapCorrectionFactor": ["0.5"],
-                                "HCAL_PPD_N_Pixels": ["400"],
-                                "HCAL_PPD_N_Pixels_uncertainty": ["0.05"],
-                                "HCAL_PPD_PE_per_MIP": ["10"],
-                                "HCAL_apply_realistic_digi": ["0"],
-                                "HCAL_deadCellRate": ["0"],
-                                "HCAL_deadCell_memorise": ["false"],
-                                "HCAL_elec_noise_mips": ["0"],
-                                "HCAL_maxDynamicRange_MIP": ["200"],
-                                "HCAL_miscalibration_correl": ["0"],
-                                "HCAL_miscalibration_uncorrel": ["0"],
-                                "HCAL_miscalibration_uncorrel_memorise": ["false"],
-                                "HCAL_pixel_spread": ["0"],
-                                "UseHcalTiming": ["1"],
-                                "HCALCorrectTimesForPropagation": ["1"],
-                                "HCALTimeWindowMin": ["-1"],
-                                "HCALSimpleTimingCut": ["true"],
-                                "HCALDeltaTimeHitResolution": ["10"],
-                                "HCALTimeResolution": ["10"],
-}
-
-MyDDCaloDigi = {}
-
-MyDDCaloDigi["10ns"] = MarlinProcessorWrapper("MyDDCaloDigi_10ns")
-MyDDCaloDigi["10ns"].OutputLevel = WARNING
-MyDDCaloDigi["10ns"].ProcessorType = "DDCaloDigi"
-MyDDCaloDigi["10ns"].Parameters = MyDDCaloDigiParameters.copy()
-MyDDCaloDigi["10ns"].Parameters |= {
-                                "CalibrECAL": ["37.5227197175", "37.5227197175"],
-                                "ECALEndcapCorrectionFactor": ["1.03245503522"],
-                                "ECALBarrelTimeWindowMax": ["10"],
-                                "ECALEndcapTimeWindowMax": ["10"],
-                                "CalibrHCALBarrel": ["45.9956826061"],
-                                "CalibrHCALEndcap": ["46.9252540291"],
-                                "CalibrHCALOther": ["57.4588011802"],
-                                "HCALBarrelTimeWindowMax": ["10"],
-                                "HCALEndcapTimeWindowMax": ["10"],
-                                }
-
-MyDDCaloDigi["400ns"] = MarlinProcessorWrapper("MyDDCaloDigi_400ns")
-MyDDCaloDigi["400ns"].OutputLevel = WARNING
-MyDDCaloDigi["400ns"].ProcessorType = "DDCaloDigi"
-MyDDCaloDigi["400ns"].Parameters = MyDDCaloDigiParameters.copy()
-MyDDCaloDigi["400ns"].Parameters |= {
-                                 "CalibrECAL": ["37.4591745147", "37.4591745147"],
-                                 "ECALEndcapCorrectionFactor": ["1.01463983425"],
-                                 "ECALBarrelTimeWindowMax": ["400"],
-                                 "ECALEndcapTimeWindowMax": ["400"],
-                                 "CalibrHCALBarrel": ["42.544403752"],
-                                 "CalibrHCALEndcap": ["42.9667604345"],
-                                 "CalibrHCALOther": ["51.3503963688"],
-                                 "HCALBarrelTimeWindowMax": ["400"],
-                                 "HCALEndcapTimeWindowMax": ["400"],
-                                 }
 
 MyDDMarlinPandoraParameters = {
                                      "FinalEnergyDensityBin": ["110."],
@@ -869,10 +725,10 @@ sequenceLoader.load("Tracking/Refit")
 
 # calorimeter digitization and pandora
 if not reco_args.trackingOnly:
-    algList.append(MyDDCaloDigi[CONFIG["CalorimeterIntegrationTimeWindow"]])
-    algList.append(MyDDSimpleMuonDigi)
+    sequenceLoader.load("CaloDigi/CaloDigi")
+    sequenceLoader.load("CaloDigi/MuonDigi")
     algList.append(MyDDMarlinPandora[CONFIG["CalorimeterIntegrationTimeWindow"]])
-    algList.append(LumiCalReco)
+    sequenceLoader.load("CaloDigi/LumiCal")
 # monitoring and Reco to MCTruth linking
 algList.append(MyClicEfficiencyCalculator)
 algList.append(MyRecoMCTruthLinker)
