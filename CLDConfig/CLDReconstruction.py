@@ -147,22 +147,6 @@ Overlay["365GeV"].Parameters |= {
                             "NumberBackground": ["1."],
                             }
 
-Refit = MarlinProcessorWrapper("Refit")
-Refit.OutputLevel = WARNING
-Refit.ProcessorType = "RefitFinal"
-Refit.Parameters = {
-                    "EnergyLossOn": ["true"],
-                    "InputRelationCollectionName": ["SiTrackRelations"],
-                    "InputTrackCollectionName": ["SiTracks"],
-                    "Max_Chi2_Incr": ["1.79769e+30"],
-                    "MinClustersOnTrackAfterFit": ["3"],
-                    "MultipleScatteringOn": ["true"],
-                    "OutputRelationCollectionName": ["SiTracks_Refitted_Relation"],
-                    "OutputTrackCollectionName": ["SiTracks_Refitted"],
-                    "ReferencePoint": ["-1"],
-                    "SmoothOn": ["false"],
-                    "extrapolateForward": ["true"]
-                    }
 
 MyClicEfficiencyCalculator = MarlinProcessorWrapper("MyClicEfficiencyCalculator")
 MyClicEfficiencyCalculator.OutputLevel = WARNING
@@ -881,7 +865,7 @@ if CONFIG["Tracking"] == "Truth":
 elif CONFIG["Tracking"] == "Conformal":
     sequenceLoader.load("Tracking/ConformalTracking")
 
-algList.append(Refit)
+sequenceLoader.load("Tracking/Refit")
 
 # calorimeter digitization and pandora
 if not reco_args.trackingOnly:
