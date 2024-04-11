@@ -22,6 +22,7 @@ from Gaudi.Configuration import INFO, WARNING, DEBUG
 from Configurables import k4DataSvc, MarlinProcessorWrapper
 from k4MarlinWrapper.inputReader import create_reader, attach_edm4hep2lcio_conversion
 from k4FWCore.parseArgs import parser
+from py_utils import SequenceLoader
 
 
 parser.add_argument("--inputFiles", action="extend", nargs="+", metavar=("file1", "file2"), help="One or multiple input files")
@@ -60,6 +61,12 @@ cellIDSvc.EncodingStringParameterName = "GlobalTrackerReadoutID"
 cellIDSvc.GeoSvcName = geoservice.name()
 cellIDSvc.OutputLevel = INFO
 svcList.append(cellIDSvc)
+
+sequenceLoader = SequenceLoader(
+    algList,
+    # global_vars can be used in sequence-loaded modules without explicit import
+    global_vars={"CONFIG": CONFIG, "geoservice": geoservice},
+)
 
 if reco_args.inputFiles:
     read = create_reader(reco_args.inputFiles, evtsvc)
