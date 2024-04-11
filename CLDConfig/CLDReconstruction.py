@@ -62,6 +62,10 @@ cellIDSvc.GeoSvcName = geoservice.name()
 cellIDSvc.OutputLevel = INFO
 svcList.append(cellIDSvc)
 
+if len(geoservice.detectors) > 1:
+    # we are making assumptions for reconstruction parameters based on the detector option, so we limit the possibilities
+    raise RuntimeError("Too many XML files for the detector path, please only specify the main file!")
+
 sequenceLoader = SequenceLoader(
     algList,
     # global_vars can be used in sequence-loaded modules without explicit import
@@ -155,86 +159,6 @@ MyTruthTrackFinder.Parameters = {
                                  "TrackerHitCollectionNames": ["VXDTrackerHits", "ITrackerHits", "OTrackerHits", "VXDEndcapTrackerHits", "ITrackerEndcapHits", "OTrackerEndcapHits"],
                                  "UseTruthInPrefit": ["false"]
                                  }
-
-if len(geoservice.detectors) > 1:
-    raise RuntimeError("Too many XML files for the detector path, please only specify the main file!")
-
-if any(small_vtx in geoservice.detectors[0] for small_vtx in ["_o2_", "_o3_", "_o4_"]):
-    CT_MAX_DIST = "0.05;"  # semi-colon is important!
-elif "_o1_" in  geoservice.detectors[0]:
-    CT_MAX_DIST = "0.03;"  # semi-colon is important!
-else:
-    raise RuntimeError("Unknown detector model to chose CT_MAX_DISTANCE")
-
-MyConformalTracking = MarlinProcessorWrapper("MyConformalTracking")
-MyConformalTracking.OutputLevel = WARNING
-MyConformalTracking.ProcessorType = "ConformalTrackingV2"
-MyConformalTracking.Parameters = {
-                                  "DebugHits": ["DebugHits"],
-                                  "DebugPlots": ["false"],
-                                  "DebugTiming": ["false"],
-                                  "MCParticleCollectionName": ["MCParticle"],
-                                  "MaxHitInvertedFit": ["0"],
-                                  "MinClustersOnTrackAfterFit": ["3"],
-                                  "RelationsNames": ["VXDTrackerHitRelations", "VXDEndcapTrackerHitRelations", "InnerTrackerBarrelHitsRelations", "OuterTrackerBarrelHitsRelations", "InnerTrackerEndcapHitsRelations", "OuterTrackerEndcapHitsRelations"],
-                                  "RetryTooManyTracks": ["false"],
-                                  "SiTrackCollectionName": ["SiTracksCT"],
-                                  "SortTreeResults": ["true"],
-                                  "Steps":
-                                  [
-                                      "[VXDBarrel]",
-                                      "@Collections", ":", "VXDTrackerHits",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.01;", "MaxCellAngleRZ", ":", "0.01;", "Chi2Cut", ":", "100;", "MinClustersOnTrack", ":", "4;", "MaxDistance", ":", CT_MAX_DIST, "SlopeZRange:", "10.0;", "HighPTCut:", "10.0;",
-                                      "@Flags", ":", "HighPTFit,", "VertexToTracker",
-                                      "@Functions", ":", "CombineCollections,", "BuildNewTracks",
-                                      "[VXDEncap]",
-                                      "@Collections", ":", "VXDEndcapTrackerHits",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.01;", "MaxCellAngleRZ", ":", "0.01;", "Chi2Cut", ":", "100;", "MinClustersOnTrack", ":", "4;", "MaxDistance", ":", CT_MAX_DIST, "SlopeZRange:", "10.0;", "HighPTCut:", "10.0;",
-                                      "@Flags", ":", "HighPTFit,", "VertexToTracker",
-                                      "@Functions", ":", "CombineCollections,", "ExtendTracks",
-                                      "[LowerCellAngle1]",
-                                      "@Collections", ":", "VXDTrackerHits,", "VXDEndcapTrackerHits",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.05;", "MaxCellAngleRZ", ":", "0.05;", "Chi2Cut", ":", "100;", "MinClustersOnTrack", ":", "4;", "MaxDistance", ":", CT_MAX_DIST, "SlopeZRange:", "10.0;", "HighPTCut:", "10.0;",
-                                      "@Flags", ":", "HighPTFit,", "VertexToTracker,", "RadialSearch",
-                                      "@Functions", ":", "CombineCollections,", "BuildNewTracks",
-                                      "[LowerCellAngle2]",
-                                      "@Collections", ":",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.1;", "MaxCellAngleRZ", ":", "0.1;", "Chi2Cut", ":", "2000;", "MinClustersOnTrack", ":", "4;", "MaxDistance", ":", CT_MAX_DIST, "SlopeZRange:", "10.0;", "HighPTCut:", "10.0;",
-                                      "@Flags", ":", "HighPTFit,", "VertexToTracker,", "RadialSearch",
-                                      "@Functions", ":", "BuildNewTracks,", "SortTracks",
-                                      "[Tracker]",
-                                      "@Collections", ":", "ITrackerHits,", "OTrackerHits,", "ITrackerEndcapHits,", "OTrackerEndcapHits",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.1;", "MaxCellAngleRZ", ":", "0.1;", "Chi2Cut", ":", "2000;", "MinClustersOnTrack", ":", "4;", "MaxDistance", ":", CT_MAX_DIST, "SlopeZRange:", "10.0;", "HighPTCut:", "1.0;",
-                                      "@Flags", ":", "HighPTFit,", "VertexToTracker,", "RadialSearch",
-                                      "@Functions", ":", "CombineCollections,", "ExtendTracks",
-                                      "[Displaced]",
-                                      "@Collections", ":", "VXDTrackerHits,", "VXDEndcapTrackerHits,", "ITrackerHits,", "OTrackerHits,", "ITrackerEndcapHits,", "OTrackerEndcapHits",
-                                      "@Parameters", ":", "MaxCellAngle", ":", "0.1;", "MaxCellAngleRZ", ":", "0.1;", "Chi2Cut", ":", "1000;", "MinClustersOnTrack", ":", "5;", "MaxDistance", ":", "0.015;", "SlopeZRange:", "10.0;", "HighPTCut:", "10.0;",
-                                      "@Flags", ":", "OnlyZSchi2cut,", "RadialSearch",
-                                      "@Functions", ":", "CombineCollections,", "BuildNewTracks"
-                                  ],
-                                  "ThetaRange": ["0.05"],
-                                  "TooManyTracks": ["100000"],
-                                  "TrackerHitCollectionNames": ["VXDTrackerHits", "VXDEndcapTrackerHits", "ITrackerHits", "OTrackerHits", "ITrackerEndcapHits", "OTrackerEndcapHits"],
-                                  "trackPurity": ["0.7"]
-                                  }
-
-ClonesAndSplitTracksFinder = MarlinProcessorWrapper("ClonesAndSplitTracksFinder")
-ClonesAndSplitTracksFinder.OutputLevel = WARNING
-ClonesAndSplitTracksFinder.ProcessorType = "ClonesAndSplitTracksFinder"
-ClonesAndSplitTracksFinder.Parameters = {
-                                         "EnergyLossOn": ["true"],
-                                         "InputTrackCollectionName": ["SiTracksCT"],
-                                         "MultipleScatteringOn": ["true"],
-                                         "OutputTrackCollectionName": ["SiTracks"],
-                                         "SmoothOn": ["false"],
-                                         "extrapolateForward": ["true"],
-                                         "maxSignificancePhi": ["3"],
-                                         "maxSignificancePt": ["2"],
-                                         "maxSignificanceTheta": ["3"],
-                                         "mergeSplitTracks": ["false"],
-                                         "minTrackPt": ["1"]
-                                         }
 
 Refit = MarlinProcessorWrapper("Refit")
 Refit.OutputLevel = WARNING
@@ -968,8 +892,7 @@ sequenceLoader.load("Tracking/TrackingDigi")
 if CONFIG["Tracking"] == "Truth":
     algList.append(MyTruthTrackFinder)
 elif CONFIG["Tracking"] == "Conformal":
-    algList.append(MyConformalTracking)
-    algList.append(ClonesAndSplitTracksFinder)
+    sequenceLoader.load("Tracking/ConformalTracking")
 
 algList.append(Refit)
 
