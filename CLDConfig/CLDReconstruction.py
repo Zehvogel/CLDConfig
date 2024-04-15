@@ -95,36 +95,6 @@ MyStatusmonitor.Parameters = {
                               "HowOften": ["100"]
                               }
 
-MyRecoMCTruthLinker = MarlinProcessorWrapper("MyRecoMCTruthLinker")
-MyRecoMCTruthLinker.OutputLevel = WARNING
-MyRecoMCTruthLinker.ProcessorType = "RecoMCTruthLinker"
-MyRecoMCTruthLinker.Parameters = {
-                                  "BremsstrahlungEnergyCut": ["1"],
-                                  "CalohitMCTruthLinkName": ["CalohitMCTruthLink"],
-                                  "ClusterCollection": ["PandoraClusters"],
-                                  "ClusterMCTruthLinkName": ["ClusterMCTruthLink"],
-                                  "FullRecoRelation": ["true"],
-                                  "InvertedNonDestructiveInteractionLogic": ["false"],
-                                  "KeepDaughtersPDG": ["22", "111", "310", "13", "211", "321", "3120"],
-                                  "MCParticleCollection": ["MCPhysicsParticles"],
-                                  "MCParticlesSkimmedName": ["MCParticlesSkimmed"],
-                                  "MCTruthClusterLinkName": ["MCTruthClusterLink"],
-                                  "MCTruthRecoLinkName": ["MCTruthRecoLink"],
-                                  "MCTruthTrackLinkName": ["MCTruthSiTracksLink"],
-                                  "RecoMCTruthLinkName": ["RecoMCTruthLink"],
-                                  "RecoParticleCollection": ["PandoraPFOs"],
-                                  "SaveBremsstrahlungPhotons": ["true"],
-                                  "SimCaloHitCollections": ["ECalBarrelCollection", "ECalEndcapCollection", "HCalBarrelCollection", "HCalEndcapCollection", "HCalRingCollection", "YokeBarrelCollection", "YokeEndcapCollection", "LumiCalCollection"],
-                                  "SimCalorimeterHitRelationNames": ["RelationCaloHit", "RelationMuonHit"],
-                                  "SimTrackerHitCollections": ["VertexBarrelCollection", "VertexEndcapCollection", "InnerTrackerBarrelCollection", "OuterTrackerBarrelCollection", "InnerTrackerEndcapCollection", "OuterTrackerEndcapCollection"],
-                                  "TrackCollection": ["SiTracks_Refitted"],
-                                  "TrackMCTruthLinkName": ["SiTracksMCTruthLink"],
-                                  "TrackerHitsRelInputCollections": ["VXDTrackerHitRelations", "VXDEndcapTrackerHitRelations", "InnerTrackerBarrelHitsRelations", "OuterTrackerBarrelHitsRelations", "InnerTrackerEndcapHitsRelations", "OuterTrackerEndcapHitsRelations"],
-                                  "UseTrackerHitRelations": ["true"],
-                                  "UsingParticleGun": ["false"],
-                                  "daughtersECutMeV": ["10"]
-                                  }
-
 EventNumber = MarlinProcessorWrapper("EventNumber")
 EventNumber.OutputLevel = WARNING
 EventNumber.ProcessorType = "Statusmonitor"
@@ -154,7 +124,7 @@ if not reco_args.trackingOnly:
     sequenceLoader.load("ParticleFlow/Pandora")
     sequenceLoader.load("CaloDigi/LumiCal")
 # monitoring and Reco to MCTruth linking
-algList.append(MyRecoMCTruthLinker)
+sequenceLoader.load("HighLevelReco/RecoMCTruthLink")
 sequenceLoader.load("Diagnostics/Tracking")
 # pfo selector (might need re-optimisation)
 if not reco_args.trackingOnly:
