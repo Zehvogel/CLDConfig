@@ -88,65 +88,6 @@ MyAIDAProcessor.Parameters = {
                               "FileType": ["root"]
                               }
 
-OverlayParameters = {
-    "MCParticleCollectionName": ["MCParticle"],
-    "MCPhysicsParticleCollectionName": ["MCPhysicsParticles"],
-    "Delta_t": ["20"],
-    "NBunchtrain": ["20"],
-    "Collection_IntegrationTimes": [
-        "VertexBarrelCollection", "380",
-        "VertexEndcapCollection", "380",
-        "InnerTrackerBarrelCollection", "380",
-        "InnerTrackerEndcapCollection", "380",
-        "OuterTrackerBarrelCollection", "380",
-        "OuterTrackerEndcapCollection", "380",
-        "ECalBarrelCollection", "380",
-        "ECalEndcapCollection", "380",
-        "HCalBarrelCollection", "380",
-        "HCalEndcapCollection", "380",
-        "HCalRingCollection", "380",
-        "YokeBarrelCollection", "380",
-        "YokeEndcapCollection", "380",
-        "LumiCalCollection", "380"
-     ],
-    "PhysicsBX": ["1"],
-    "Poisson_random_NOverlay": ["false"],
-    "RandomBx": ["false"],
-    "TPCDriftvelocity": ["0.05"],
-    "BackgroundFileNames": ["pairs_Z_sim.slcio"],
-}
-Overlay = {}
-
-Overlay["False"] = MarlinProcessorWrapper("OverlayFalse")
-Overlay["False"].OutputLevel = WARNING
-Overlay["False"].ProcessorType = "OverlayTimingGeneric"
-Overlay["False"].Parameters = OverlayParameters.copy()
-Overlay["False"].Parameters |= {
-                           "BackgroundFileNames": [],
-                           "NBunchtrain": ["0"],
-                           "NumberBackground": ["0."],
-                           }
-
-# XXX: Caution, this probably needs an update
-Overlay["91GeV"] = MarlinProcessorWrapper("Overlay91GeV")
-Overlay["91GeV"].OutputLevel = WARNING
-Overlay["91GeV"].ProcessorType = "OverlayTimingGeneric"
-Overlay["91GeV"].Parameters = OverlayParameters.copy()
-Overlay["91GeV"].Parameters |= {
-                           "NumberBackground": ["1."],
-                           }
-
-# XXX: Caution, this probably needs an update
-Overlay["365GeV"] = MarlinProcessorWrapper("Overlay365GeV")
-Overlay["365GeV"].OutputLevel = WARNING
-Overlay["365GeV"].ProcessorType = "OverlayTimingGeneric"
-Overlay["365GeV"].Parameters = OverlayParameters.copy()
-Overlay["365GeV"].Parameters |= {
-                            "Delta_t": ["3396"],
-                            "NBunchtrain": ["3"],
-                            "NumberBackground": ["1."],
-                            }
-
 
 MyClicEfficiencyCalculator = MarlinProcessorWrapper("MyClicEfficiencyCalculator")
 MyClicEfficiencyCalculator.OutputLevel = WARNING
@@ -261,7 +202,7 @@ EventNumber.Parameters = {
 # TODO: put this somewhere else, needs to be in front of the output for now :(
 # setup AIDA histogramming and add eventual background overlay
 algList.append(MyAIDAProcessor)
-algList.append(Overlay[CONFIG["Overlay"]])
+sequenceLoader.load("Overlay/Overlay")
 # tracker hit digitisation
 sequenceLoader.load("Tracking/TrackingDigi")
 
