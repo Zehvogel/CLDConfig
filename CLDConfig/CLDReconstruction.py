@@ -88,13 +88,6 @@ MyAIDAProcessor.Parameters = {
                               "FileType": ["root"]
                               }
 
-MyStatusmonitor = MarlinProcessorWrapper("MyStatusmonitor")
-MyStatusmonitor.OutputLevel = WARNING
-MyStatusmonitor.ProcessorType = "Statusmonitor"
-MyStatusmonitor.Parameters = {
-                              "HowOften": ["100"]
-                              }
-
 EventNumber = MarlinProcessorWrapper("EventNumber")
 EventNumber.OutputLevel = WARNING
 EventNumber.ProcessorType = "Statusmonitor"
