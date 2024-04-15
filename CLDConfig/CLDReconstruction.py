@@ -125,30 +125,6 @@ MyRecoMCTruthLinker.Parameters = {
                                   "daughtersECutMeV": ["10"]
                                   }
 
-RenameCollection = MarlinProcessorWrapper("RenameCollection")
-RenameCollection.OutputLevel = WARNING
-RenameCollection.ProcessorType = "MergeCollections"
-RenameCollection.Parameters = {
-                               "CollectionParameterIndex": ["0"],
-                               "InputCollectionIDs": [],
-                               "InputCollections": ["PandoraPFOs"],
-                               "OutputCollection": ["PFOsFromJets"]
-                               }
-
-MyFastJetProcessor = MarlinProcessorWrapper("MyFastJetProcessor")
-MyFastJetProcessor.OutputLevel = WARNING
-MyFastJetProcessor.ProcessorType = "FastJetProcessor"
-MyFastJetProcessor.Parameters = {
-                                 "algorithm": ["ValenciaPlugin", "1.2", "1.0", "0.7"],
-                                 "clusteringMode": ["ExclusiveNJets", "2"],
-                                 "jetOut": ["JetsAfterGamGamRemoval"],
-                                 "recParticleIn": ["TightSelectedPandoraPFOs"],
-                                 "recParticleOut": ["PFOsFromJets"],
-                                 "recombinationScheme": ["E_scheme"],
-                                 "storeParticlesInJets": ["true"]
-                                 }
-
-
 EventNumber = MarlinProcessorWrapper("EventNumber")
 EventNumber.OutputLevel = WARNING
 EventNumber.ProcessorType = "Statusmonitor"
@@ -183,12 +159,7 @@ sequenceLoader.load("Diagnostics/Tracking")
 # pfo selector (might need re-optimisation)
 if not reco_args.trackingOnly:
     sequenceLoader.load("HighLevelReco/PFOSelector")
-# misc.
-    if CONFIG["Overlay"] == "False":
-        algList.append(RenameCollection)
-    else:
-        algList.append(MyFastJetProcessor)
-
+    sequenceLoader.load("HighLevelReco/JetClusteringOrRenaming")
     sequenceLoader.load("HighLevelReco/JetAndVertex")
 # event number processor, down here to attach the conversion back to edm4hep to it
 algList.append(EventNumber)
