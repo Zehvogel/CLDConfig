@@ -88,36 +88,6 @@ MyAIDAProcessor.Parameters = {
                               "FileType": ["root"]
                               }
 
-
-MyClicEfficiencyCalculator = MarlinProcessorWrapper("MyClicEfficiencyCalculator")
-MyClicEfficiencyCalculator.OutputLevel = WARNING
-MyClicEfficiencyCalculator.ProcessorType = "ClicEfficiencyCalculator"
-MyClicEfficiencyCalculator.Parameters = {
-                                         "MCParticleCollectionName": ["MCParticle"],
-                                         "MCParticleNotReco": ["MCParticleNotReco"],
-                                         "MCPhysicsParticleCollectionName": ["MCPhysicsParticles"],
-                                         "TrackCollectionName": ["SiTracks_Refitted"],
-                                         "TrackerHitCollectionNames": ["VXDTrackerHits", "VXDEndcapTrackerHits", "ITrackerHits", "OTrackerHits", "ITrackerEndcapHits", "OTrackerEndcapHits"],
-                                         "TrackerHitRelCollectionNames": ["VXDTrackerHitRelations", "VXDEndcapTrackerHitRelations", "InnerTrackerBarrelHitsRelations", "OuterTrackerBarrelHitsRelations", "InnerTrackerEndcapHitsRelations", "OuterTrackerEndcapHitsRelations"],
-                                         "efficiencyTreeName": ["trktree"],
-                                         "mcTreeName": ["mctree"],
-                                         "morePlots": ["false"],
-                                         "purityTreeName": ["puritytree"],
-                                         "reconstructableDefinition": ["ILDLike"],
-                                         "vertexBarrelID": ["1"]
-                                         }
-
-MyTrackChecker = MarlinProcessorWrapper("MyTrackChecker")
-MyTrackChecker.OutputLevel = WARNING
-MyTrackChecker.ProcessorType = "TrackChecker"
-MyTrackChecker.Parameters = {
-                             "MCParticleCollectionName": ["MCParticle"],
-                             "TrackCollectionName": ["SiTracks_Refitted"],
-                             "TrackRelationCollectionName": ["SiTracksMCTruthLink"],
-                             "TreeName": ["checktree"],
-                             "UseOnlyTree": ["true"]
-                             }
-
 MyStatusmonitor = MarlinProcessorWrapper("MyStatusmonitor")
 MyStatusmonitor.OutputLevel = WARNING
 MyStatusmonitor.ProcessorType = "Statusmonitor"
@@ -154,19 +124,6 @@ MyRecoMCTruthLinker.Parameters = {
                                   "UsingParticleGun": ["false"],
                                   "daughtersECutMeV": ["10"]
                                   }
-
-MyHitResiduals = MarlinProcessorWrapper("MyHitResiduals")
-MyHitResiduals.OutputLevel = WARNING
-MyHitResiduals.ProcessorType = "HitResiduals"
-MyHitResiduals.Parameters = {
-                             "EnergyLossOn": ["true"],
-                             "MaxChi2Increment": ["1000"],
-                             "MultipleScatteringOn": ["true"],
-                             "SmoothOn": ["false"],
-                             "TrackCollectionName": ["SiTracks_Refitted"],
-                             "outFileName": ["residuals.root"],
-                             "treeName": ["restree"]
-                             }
 
 RenameCollection = MarlinProcessorWrapper("RenameCollection")
 RenameCollection.OutputLevel = WARNING
@@ -221,9 +178,8 @@ if not reco_args.trackingOnly:
     sequenceLoader.load("ParticleFlow/Pandora")
     sequenceLoader.load("CaloDigi/LumiCal")
 # monitoring and Reco to MCTruth linking
-algList.append(MyClicEfficiencyCalculator)
 algList.append(MyRecoMCTruthLinker)
-algList.append(MyTrackChecker)
+sequenceLoader.load("Diagnostics/Tracking")
 # pfo selector (might need re-optimisation)
 if not reco_args.trackingOnly:
     sequenceLoader.load("HighLevelReco/PFOSelector")
