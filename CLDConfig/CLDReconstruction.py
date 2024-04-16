@@ -164,7 +164,7 @@ if CONFIG["OutputMode"] == "EDM4Hep":
     lcioConvTool.collNameMapping = {
         "MCParticle": "MCParticles"
     }
-    lcioConvTool.OutputLevel = DEBUG
+    lcioConvTool.OutputLevel = WARNING
 # attach to the last non output processor
     EventNumber.Lcio2EDM4hepTool = lcioConvTool
 

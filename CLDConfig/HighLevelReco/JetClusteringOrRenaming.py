@@ -25,7 +25,7 @@ RenameCollection.OutputLevel = WARNING
 RenameCollection.ProcessorType = "MergeCollections"
 RenameCollection.Parameters = {
                                "CollectionParameterIndex": ["0"],
-                               "InputCollectionIDs": [],
+                               "InputCollectionIDs": ["0"],
                                "InputCollections": ["PandoraPFOs"],
                                "OutputCollection": ["PFOsFromJets"]
                                }
