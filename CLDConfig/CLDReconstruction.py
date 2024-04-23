@@ -95,7 +95,6 @@ EventNumber.Parameters = {
                           "HowOften": ["1"]
                           }
 
-# TODO: put this somewhere else, needs to be in front of the output for now :(
 # setup AIDA histogramming and add eventual background overlay
 algList.append(MyAIDAProcessor)
 sequenceLoader.load("Overlay/Overlay")
