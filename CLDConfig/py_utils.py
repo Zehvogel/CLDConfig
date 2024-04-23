@@ -22,6 +22,8 @@ import importlib.util
 import importlib.abc
 from importlib.machinery import SourceFileLoader
 from Configurables import PodioOutput, MarlinProcessorWrapper
+from typing import Iterable
+from Gaudi.Configuration import WARNING
 
 
 def import_from(
@@ -153,3 +155,58 @@ def attach_lcio2edm4hep_conversion(algList: list) -> None:
 
     alg.Lcio2EDM4hepTool = lcioConvTool
 
+
+
+def _create_writer_lcio(writer_name: str, output_name: str, keep_list: Iterable = (), full_subset_list: Iterable = ()):
+    # hmpf writer needs a name
+    writer = MarlinProcessorWrapper(writer_name)
+    writer.OutputLevel = WARNING
+    writer.ProcessorType = "LCIOOutputProcessor"
+
+    # convert iterables to "real" lists
+    _full_subset_list = list(full_subset_list)
+    _keep_list = list(keep_list)
+
+    dropped_types = []
+    if _keep_list:
+        # drop collections of all types
+        dropped_types = ["MCParticle", "LCRelation", "SimCalorimeterHit", "CalorimeterHit", "SimTrackerHit", "TrackerHit", "TrackerHitPlane", "Track", "ReconstructedParticle", "LCFloatVec"]
+
+    writer.Parameters = {
+        "DropCollectionNames": [],
+        "DropCollectionTypes": dropped_types,
+        "FullSubsetCollections": _full_subset_list,
+        "KeepCollectionNames": _keep_list,
+        "LCIOOutputFile": [f"{output_name}.slcio"],
+        "LCIOWriteMode": ["WRITE_NEW"]
+    }
+
+    return writer
+
+
+def _create_writer_edm4hep(writer_name: str, output_name: str, keep_list: Iterable = ()):
+    writer = PodioOutput(writer_name, filename = f"{output_name}.edm4hep.root")
+
+    if keep_list:
+        writer.outputCommands = ["drop *"] + [f"keep {col}" for col in keep_list]
+    else:
+        writer.outputCommands = ["keep *"]
+
+    return writer
+
+
+# FIXME: keep this or just use the two internal functions directly?
+def create_writer(format: str, writer_name: str, output_name: str, keep_list: Iterable = (), full_subset_list: Iterable = ()):
+    """
+    fancy docstring that completely describes this...
+
+    so far the only thing noteworthy:
+    In contrast to its name an empty keep_list means keep everything
+    """
+    if format == "lcio":
+        return _create_writer_lcio(writer_name, output_name, keep_list, full_subset_list)
+    elif format == "edm4hep":
+        return _create_writer_edm4hep(writer_name, output_name, keep_list) # edm4hep has no concept of subsets
+    else:
+        return None
+        # TODO: warn about format being unsupported but without killing --help
