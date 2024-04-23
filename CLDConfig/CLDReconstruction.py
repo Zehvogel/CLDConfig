@@ -22,7 +22,7 @@ from Gaudi.Configuration import INFO, WARNING, DEBUG
 from Configurables import k4DataSvc, MarlinProcessorWrapper
 from k4MarlinWrapper.inputReader import create_reader, attach_edm4hep2lcio_conversion
 from k4FWCore.parseArgs import parser
-from py_utils import SequenceLoader
+from py_utils import SequenceLoader, attach_lcio2edm4hep_conversion
 
 
 parser.add_argument("--inputFiles", action="extend", nargs="+", metavar=("file1", "file2"), help="One or multiple input files")
@@ -158,16 +158,6 @@ if CONFIG["OutputMode"] == "LCIO":
     algList.append(Output_DST)
 
 if CONFIG["OutputMode"] == "EDM4Hep":
-    from Configurables import Lcio2EDM4hepTool
-    lcioConvTool = Lcio2EDM4hepTool("lcio2EDM4hep")
-    lcioConvTool.convertAll = True
-    lcioConvTool.collNameMapping = {
-        "MCParticle": "MCParticles"
-    }
-    lcioConvTool.OutputLevel = WARNING
-# attach to the last non output processor
-    EventNumber.Lcio2EDM4hepTool = lcioConvTool
-
     from Configurables import PodioOutput
     out = PodioOutput("PodioOutput", filename = f"{reco_args.outputBasename}_edm4hep.root")
     out.outputCommands = ["keep *"]
@@ -175,6 +165,9 @@ if CONFIG["OutputMode"] == "EDM4Hep":
 
 # We need to convert the inputs in case we have EDM4hep input
 attach_edm4hep2lcio_conversion(algList, read)
+
+# We need to convert the outputs in case we have EDM4hep output
+attach_lcio2edm4hep_conversion(algList)
 
 from Configurables import ApplicationMgr
 ApplicationMgr( TopAlg = algList,

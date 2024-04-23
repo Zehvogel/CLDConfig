@@ -21,6 +21,7 @@ from typing import Union, Optional, Dict, Any
 import importlib.util
 import importlib.abc
 from importlib.machinery import SourceFileLoader
+from Configurables import PodioOutput, MarlinProcessorWrapper
 
 
 def import_from(
@@ -128,3 +129,27 @@ class SequenceLoader:
 
         seq = getattr(seq_module, seq_name)
         self.alg_list.extend(seq)
+
+
+
+def attach_lcio2edm4hep_conversion(algList: list) -> None:
+    """Attaches a conversion from lcio to edm4hep at the last MarlinWrapper in algList if necessary
+    """
+    # need to attach a conversion if there are edm4hep outputs and marlin wrappers
+    if not any((isinstance(alg, PodioOutput) for alg in algList)):
+        # no edm4hep output -> no conversion :)
+        return
+    # find last marlin wrapper
+    for alg in reversed(algList):
+        if isinstance(alg, MarlinProcessorWrapper):
+            break
+
+    from Configurables import Lcio2EDM4hepTool
+    lcioConvTool = Lcio2EDM4hepTool("lcio2EDM4hep")
+    lcioConvTool.convertAll = True
+    lcioConvTool.collNameMapping = {
+        "MCParticle": "MCParticles"
+    }
+
+    alg.Lcio2EDM4hepTool = lcioConvTool
+
