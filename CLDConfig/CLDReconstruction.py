@@ -37,6 +37,7 @@ svcList = []
 evtsvc = k4DataSvc("EventDataSvc")
 svcList.append(evtsvc)
 
+# TODO: partly replace by arguments
 CONFIG = {
              "CalorimeterIntegrationTimeWindow": "10ns",
              "CalorimeterIntegrationTimeWindowChoices": ["10ns", "400ns"],
@@ -52,6 +53,7 @@ CONFIG = {
 
 from Configurables import GeoSvc, TrackingCellIDEncodingSvc
 geoservice = GeoSvc("GeoSvc")
+# TODO: add argument for this
 geoservice.detectors = [os.environ["K4GEO"]+"/FCCee/CLD/compact/CLD_o2_v05/CLD_o2_v05.xml"]
 geoservice.OutputLevel = INFO
 geoservice.EnableGeant4Geo = False
