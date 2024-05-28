@@ -123,7 +123,8 @@ sequenceLoader.load("Diagnostics/Tracking")
 if not reco_args.trackingOnly:
     sequenceLoader.load("HighLevelReco/PFOSelector")
     sequenceLoader.load("HighLevelReco/JetClusteringOrRenaming")
-    sequenceLoader.load("HighLevelReco/JetAndVertex")
+    # FIXME: LCFIPlus causes occasional breakage: https://github.com/lcfiplus/LCFIPlus/issues/69
+    # sequenceLoader.load("HighLevelReco/JetAndVertex")
 # event number processor, down here to attach the conversion back to edm4hep to it
 algList.append(EventNumber)
 
