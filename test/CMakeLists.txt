@@ -49,3 +49,9 @@ add_test(NAME trkOnly
          COMMAND k4run --trackingOnly --inputFiles=test.edm4hep.root --outputBasename=trkOnly_test_edm4hep CLDReconstruction.py --GeoSvc.detectors=${DETECTOR}
 )
 set_property(TEST trkOnly APPEND PROPERTY DEPENDS ddsim_edm4hep)
+
+add_test(NAME LCFIJet
+         WORKING_DIRECTORY ${CLDConfig_DIR}
+         COMMAND k4run --enableLCFIJet --inputFiles=test.edm4hep.root --outputBasename=trkOnly_test_edm4hep CLDReconstruction.py --GeoSvc.detectors=${DETECTOR}
+)
+set_property(TEST LCFIJet APPEND PROPERTY DEPENDS ddsim_edm4hep)
