@@ -18,7 +18,7 @@ limitations under the License.
 ]]
 include(CTest)
 
-set(DETECTOR $ENV{K4GEO}/FCCee/CLD/compact/FCCee_o1_v04/FCCee_o1_v04.xml)
+set(DETECTOR $ENV{K4GEO}/FCCee/CLD/compact/CLD_o2_v06/CLD_o2_v06.xml)
 set(CLDConfig_DIR ${CMAKE_CURRENT_LIST_DIR}/../CLDConfig)
 
 add_test(NAME ddsim_lcio
