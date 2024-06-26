@@ -55,3 +55,9 @@ add_test(NAME LCFIJet
          COMMAND k4run --enableLCFIJet --inputFiles=test.edm4hep.root --outputBasename=trkOnly_test_edm4hep CLDReconstruction.py --GeoSvc.detectors=${DETECTOR}
 )
 set_property(TEST LCFIJet APPEND PROPERTY DEPENDS ddsim_edm4hep)
+
+add_test(NAME Help
+         WORKING_DIRECTORY ${CLDConfig_DIR}
+         COMMAND k4run --help CLDReconstruction.py
+)
+set_property(TEST Help APPEND PROPERTY PASS_REGULAR_EXPRESSION "show this help message and exit")
