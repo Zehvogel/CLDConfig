@@ -19,10 +19,11 @@
 import os
 from Gaudi.Configuration import INFO, WARNING, DEBUG
 
-from Gaudi.Configurables import k4DataSvc, MarlinProcessorWrapper, GeoSvc, TrackingCellIDEncodingSvc
-from k4MarlinWrapper.inputReader import create_reader, attach_edm4hep2lcio_conversion
+from Gaudi.Configurables import EventDataSvc, MarlinProcessorWrapper, GeoSvc, TrackingCellIDEncodingSvc
+from k4FWCore import ApplicationMgr, IOSvc
 from k4FWCore.parseArgs import parser
-from py_utils import SequenceLoader, attach_lcio2edm4hep_conversion, create_writer, parse_collection_patch_file
+from py_utils import SequenceLoader, parse_collection_patch_file
+from k4MarlinWrapper.io_helpers import IOHandlerHelper
 
 parser_group = parser.add_argument_group("CLDReconstruction.py custom options")
 parser_group.add_argument("--inputFiles", action="extend", nargs="+", metavar=("file1", "file2"), help="One or multiple input files")
@@ -36,11 +37,12 @@ tracking_group.add_argument("--conformalTracking", action="store_true", default=
 tracking_group.add_argument("--truthTracking", action="store_true", default=False, help="Cheat tracking pattern recognition")
 reco_args = parser.parse_known_args()[0]
 
-algList = []
-svcList = []
 
-evtsvc = k4DataSvc("EventDataSvc")
-svcList.append(evtsvc)
+evtsvc = EventDataSvc("EventDataSvc")
+iosvc = IOSvc()
+
+svcList = [evtsvc, iosvc]
+algList = []
 
 CONFIG = {
              "CalorimeterIntegrationTimeWindow": "10ns",
@@ -87,13 +89,9 @@ sequenceLoader = SequenceLoader(
                  },
 )
 
-if reco_args.inputFiles:
-    read = create_reader(reco_args.inputFiles, evtsvc)
-    read.OutputLevel = INFO
-    algList.append(read)
-else:
-    print('WARNING: No input files specified, the CLD Reconstruction will fail')
-    read = None
+io_handler = IOHandlerHelper(algList, iosvc)
+# FIXME: breaks --help as inputFiles are empty
+io_handler.add_reader(reco_args.inputFiles)
 
 MyAIDAProcessor = MarlinProcessorWrapper("MyAIDAProcessor")
 MyAIDAProcessor.OutputLevel = WARNING
@@ -148,10 +146,22 @@ DST_SUBSETLIST = ["EfficientMCParticles", "InefficientMCParticles", "MCPhysicsPa
 
 # TODO: replace all the ugly strings by something sensible like Enum
 if CONFIG["OutputMode"] == "LCIO":
-    Output_REC = create_writer("lcio", "Output_REC", f"{reco_args.outputBasename}_REC")
-    algList.append(Output_REC)
+    Output_REC = io_handler.add_lcio_writer("Output_REC")
+    Output_REC.Parameters = {
+        "LCIOOutputFile": [f"{reco_args.outputBasename}_REC.slcio"],
+        "LCIOWriteMode": ["WRITE_NEW"],
+    }
 
-    Output_DST = create_writer("lcio", "Output_DST", f"{reco_args.outputBasename}_DST", DST_KEEPLIST, DST_SUBSETLIST)
+    Output_DST = io_handler.add_lcio_writer("Output_DST")
+    dropped_types = ["MCParticle", "LCRelation", "SimCalorimeterHit", "CalorimeterHit", "SimTrackerHit", "TrackerHit", "TrackerHitPlane", "Track", "ReconstructedParticle", "LCFloatVec"]
+    Output_DST.Parameters = {
+        "LCIOOutputFile": [f"{reco_args.outputBasename}_DST.slcio"],
+        "LCIOWriteMode": ["WRITE_NEW"],
+        "DropCollectionNames": [],
+        "DropCollectionTypes": dropped_types,
+        "FullSubsetCollections": DST_SUBSETLIST,
+        "KeepCollectionNames": DST_KEEPLIST,
+    }
     algList.append(Output_DST)
 
 if CONFIG["OutputMode"] == "EDM4Hep":
@@ -164,21 +174,14 @@ if CONFIG["OutputMode"] == "EDM4Hep":
     }
     algList.append(collPatcherRec)
 
-    Output_REC = create_writer("edm4hep", "Output_REC", f"{reco_args.outputBasename}_REC")
-    algList.append(Output_REC)
-
+    io_handler.add_edm4hep_writer(f"{reco_args.outputBasename}_REC.edm4hep.root", ["keep *"])
     # FIXME: needs https://github.com/key4hep/k4FWCore/issues/226
-    # Output_DST = create_writer("edm4hep", "Output_DST", f"{reco_args.outputBasename}_DST", DST_KEEPLIST)
-    # algList.append(Output_DST)
+    # <DST output for edm4hep>
 
 
-# We need to convert the inputs in case we have EDM4hep input
-attach_edm4hep2lcio_conversion(algList, read)
+# We need to attach all the necessary converters
+io_handler.finalize_converters()
 
-# We need to convert the outputs in case we have EDM4hep output
-attach_lcio2edm4hep_conversion(algList)
-
-from Configurables import ApplicationMgr
 ApplicationMgr( TopAlg = algList,
                 EvtSel = 'NONE',
                 EvtMax = 3, # Overridden by the --num-events switch to k4run
