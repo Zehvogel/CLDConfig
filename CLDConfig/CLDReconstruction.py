@@ -19,7 +19,7 @@
 import os
 from Gaudi.Configuration import INFO, WARNING, DEBUG
 
-from Configurables import k4DataSvc, MarlinProcessorWrapper
+from Gaudi.Configurables import k4DataSvc, MarlinProcessorWrapper, GeoSvc, TrackingCellIDEncodingSvc
 from k4MarlinWrapper.inputReader import create_reader, attach_edm4hep2lcio_conversion
 from k4FWCore.parseArgs import parser
 from py_utils import SequenceLoader, attach_lcio2edm4hep_conversion, create_writer, parse_collection_patch_file
@@ -55,7 +55,6 @@ CONFIG = {
 
 REC_COLLECTION_CONTENTS_FILE = "collections_rec_level.txt" # file with the collections to be patched in when writing from LCIO to EDM4hep
 
-from Configurables import GeoSvc, TrackingCellIDEncodingSvc, Lcio2EDM4hepTool
 geoservice = GeoSvc("GeoSvc")
 geoservice.detectors = [reco_args.compactFile]
 geoservice.OutputLevel = INFO
