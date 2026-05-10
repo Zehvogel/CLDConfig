@@ -21,9 +21,6 @@ from typing import Union, Optional, Dict, Any, List
 import importlib.util
 import importlib.abc
 from importlib.machinery import SourceFileLoader
-from Configurables import PodioOutput, MarlinProcessorWrapper
-from typing import Iterable
-from Gaudi.Configuration import WARNING
 
 
 def import_from(
@@ -133,79 +130,6 @@ class SequenceLoader:
         self.alg_list.extend(seq)
 
 
-
-def attach_lcio2edm4hep_conversion(algList: list) -> None:
-    """Attaches a conversion from lcio to edm4hep at the last MarlinWrapper in algList if necessary
-    """
-    # need to attach a conversion if there are edm4hep outputs and marlin wrappers
-    if not any((isinstance(alg, PodioOutput) for alg in algList)):
-        # no edm4hep output -> no conversion :)
-        return
-    # find last marlin wrapper
-    for alg in reversed(algList):
-        if isinstance(alg, MarlinProcessorWrapper):
-            break
-
-    from Configurables import Lcio2EDM4hepTool
-    lcioConvTool = Lcio2EDM4hepTool("lcio2EDM4hep")
-    lcioConvTool.convertAll = True
-    lcioConvTool.collNameMapping = {
-        "MCParticle": "MCParticles",
-    }
-
-    alg.Lcio2EDM4hepTool = lcioConvTool
-
-
-
-def _create_writer_lcio(writer_name: str, output_name: str, keep_list: Iterable = (), full_subset_list: Iterable = ()):
-    writer = MarlinProcessorWrapper(writer_name)
-    writer.OutputLevel = WARNING
-    writer.ProcessorType = "LCIOOutputProcessor"
-
-    # convert iterables to "real" lists
-    _full_subset_list = list(full_subset_list)
-    _keep_list = list(keep_list)
-
-    dropped_types = []
-    if _keep_list:
-        # drop collections of all types
-        dropped_types = ["MCParticle", "LCRelation", "SimCalorimeterHit", "CalorimeterHit", "SimTrackerHit", "TrackerHit", "TrackerHitPlane", "Track", "ReconstructedParticle", "LCFloatVec"]
-
-    writer.Parameters = {
-        "DropCollectionNames": [],
-        "DropCollectionTypes": dropped_types,
-        "FullSubsetCollections": _full_subset_list,
-        "KeepCollectionNames": _keep_list,
-        "LCIOOutputFile": [f"{output_name}.slcio"],
-        "LCIOWriteMode": ["WRITE_NEW"],
-    }
-
-    return writer
-
-
-def _create_writer_edm4hep(writer_name: str, output_name: str, keep_list: Iterable = ()):
-    writer = PodioOutput(writer_name, filename = f"{output_name}.edm4hep.root")
-
-    if keep_list:
-        writer.outputCommands = ["drop *"] + [f"keep {col}" for col in keep_list]
-    else:
-        writer.outputCommands = ["keep *"]
-
-    return writer
-
-
-def create_writer(format: str, writer_name: str, output_name: str, keep_list: Iterable = (), full_subset_list: Iterable = ()):
-    """
-    Creates writer depending on the requested format
-    In contrast to its name an empty keep_list means keep everything
-    """
-    if format == "lcio":
-        return _create_writer_lcio(writer_name, output_name, keep_list, full_subset_list)
-    elif format == "edm4hep":
-        return _create_writer_edm4hep(writer_name, output_name, keep_list) # FIXME: handle edm4hep subset collections!
-    else:
-        return None
-        # TODO: warn about format being unsupported but without killing --help
 
 def parse_collection_patch_file(patch_file: Union[str, os.PathLike]) -> List[str]:
     """Parse a collection patch file such that it can be used by the

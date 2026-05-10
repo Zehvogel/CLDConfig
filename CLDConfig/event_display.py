@@ -20,7 +20,8 @@
 
 import os
 from Gaudi.Configuration import INFO
-from Configurables import MarlinProcessorWrapper, k4DataSvc, GeoSvc
+from Configurables import MarlinProcessorWrapper, GeoSvc, EventDataSvc
+from k4FWCore import ApplicationMgr
 from k4FWCore.parseArgs import parser
 from k4MarlinWrapper.inputReader import create_reader, attach_edm4hep2lcio_conversion
 
@@ -52,7 +53,7 @@ reco_args = parser.parse_known_args()[0]
 algList = []
 svcList = []
 
-evtsvc = k4DataSvc("EventDataSvc")
+evtsvc = EventDataSvc("EventDataSvc")
 svcList.append(evtsvc)
 
 
@@ -213,7 +214,6 @@ algList.append(MyCEDViewer)
 # We need to convert the inputs in case we have EDM4hep input
 attach_edm4hep2lcio_conversion(algList, read)
 
-from Configurables import ApplicationMgr
 ApplicationMgr( TopAlg = algList,
                 EvtSel = 'NONE',
                 EvtMax = 10,
