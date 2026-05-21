@@ -78,7 +78,7 @@ class SequenceLoader:
     """
 
     def __init__(
-        self, alg_list: list, global_vars: Optional[Dict[str, Any]] = None
+        self, alg_list: list, global_vars: Optional[Dict[str, Any]] = None, base_dir: Optional[str] = None
     ) -> None:
         """Initialize the SequenceLoader
 
@@ -93,9 +93,11 @@ class SequenceLoader:
                 variables for the sequences. Defaults to None. The keys in this
                 dictionary will be the available variables in the imported
                 module and the values will be the values of these variables.
+            base_dir (Optional[str]): path from which the sequences will be loaded.
         """
         self.alg_list = alg_list
         self.global_vars = global_vars
+        self.base_dir = base_dir or "."
 
     def load(self, sequence: str) -> None:
         """Loads a sequence algorithm from a specified Python file and appends
@@ -118,7 +120,7 @@ class SequenceLoader:
             sequence of algorithms that is defined in `TrackingDigiSequence` in
             that file to the alg_list
         """
-        filename = f"{sequence}.py"
+        filename = f"{self.base_dir}/{sequence}.py"
         seq_name = f"{sequence.split('/')[-1]}Sequence"
 
         seq_module = import_from(
