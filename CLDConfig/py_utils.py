@@ -19,7 +19,6 @@
 import os
 from typing import Union, Optional, Dict, Any, List
 import importlib.util
-import importlib.abc
 from importlib.machinery import SourceFileLoader
 
 
@@ -78,7 +77,10 @@ class SequenceLoader:
     """
 
     def __init__(
-        self, alg_list: list, global_vars: Optional[Dict[str, Any]] = None, base_dir: Optional[str] = None
+        self,
+        alg_list: list,
+        global_vars: Optional[Dict[str, Any]] = None,
+        base_dir: Optional[str] = None,
     ) -> None:
         """Initialize the SequenceLoader
 
@@ -130,7 +132,6 @@ class SequenceLoader:
 
         seq = getattr(seq_module, seq_name)
         self.alg_list.extend(seq)
-
 
 
 def parse_collection_patch_file(patch_file: Union[str, os.PathLike]) -> List[str]:
