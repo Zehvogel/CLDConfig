@@ -23,7 +23,8 @@ from Gaudi.Configurables import EventDataSvc, MarlinProcessorWrapper, GeoSvc, Tr
 from k4FWCore import ApplicationMgr, IOSvc
 from k4FWCore.parseArgs import parser
 import sys
-sys.path.append('.')
+base_dir = os.path.dirname(__file__)
+sys.path.append(base_dir)
 from py_utils import SequenceLoader, parse_collection_patch_file
 from k4MarlinWrapper.io_helpers import IOHandlerHelper
 
@@ -58,7 +59,7 @@ CONFIG = {
              "OutputModeChoices": ["LCIO", "EDM4hep"] #, "both"] FIXME: both is not implemented yet
 }
 
-REC_COLLECTION_CONTENTS_FILE = "collections_rec_level.txt" # file with the collections to be patched in when writing from LCIO to EDM4hep
+REC_COLLECTION_CONTENTS_FILE = f"{base_dir}/collections_rec_level.txt" # file with the collections to be patched in when writing from LCIO to EDM4hep
 
 geoservice = GeoSvc("GeoSvc")
 geoservice.detectors = [reco_args.compactFile]
@@ -90,6 +91,7 @@ sequenceLoader = SequenceLoader(
     global_vars={"CONFIG": CONFIG, "geoservice": geoservice, "reco_args": reco_args,
                  "BEAM_SPOT_SIZES": BEAM_SPOT_SIZES,
                  },
+    base_dir=base_dir,
 )
 
 io_handler = IOHandlerHelper(algList, iosvc)
