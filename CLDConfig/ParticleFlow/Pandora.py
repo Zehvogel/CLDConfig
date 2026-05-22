@@ -21,8 +21,17 @@ from Configurables import MarlinProcessorWrapper
 
 import sys
 import os
+from pathlib import Path
 
-dir_path = os.path.dirname(__file__)
+
+dir_path = Path(os.path.dirname(__file__))
+cwd = Path.cwd()
+
+help_only = "-h" in sys.argv or "--help" in sys.argv
+if cwd != dir_path.parent and not help_only:
+    print(f"Running Pandora is only possible when k4run is called from the directory: {dir_path.parent}")
+    sys.exit(1)
+
 
 MyDDMarlinPandoraParameters = {
                                      "FinalEnergyDensityBin": ["110."],
