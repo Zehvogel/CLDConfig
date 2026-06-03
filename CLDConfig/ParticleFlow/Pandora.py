@@ -20,6 +20,17 @@ from Gaudi.Configuration import WARNING
 from Configurables import MarlinProcessorWrapper
 
 import sys
+import os
+from pathlib import Path
+
+
+dir_path = Path(os.path.dirname(__file__))
+cwd = Path.cwd()
+
+help_only = "-h" in sys.argv or "--help" in sys.argv
+if cwd != dir_path.parent and not help_only:
+    print(f"Running Pandora is only possible when k4run is called from the directory: {dir_path.parent}")
+    sys.exit(1)
 
 
 MyDDMarlinPandoraParameters = {
@@ -112,7 +123,7 @@ MyDDMarlinPandora.Parameters = MyDDMarlinPandoraParameters.copy()
 if CONFIG["CalorimeterIntegrationTimeWindow"] == "10ns":
 
     MyDDMarlinPandora.Parameters |= {
-                                "PandoraSettingsXmlFile": ["PandoraSettingsCLD/PandoraSettingsDefault.xml"],
+                                "PandoraSettingsXmlFile": [f"{dir_path}/../PandoraSettingsCLD/PandoraSettingsDefault.xml"],
                                 "SoftwareCompensationWeights": ["2.40821", "-0.0515852", "0.000711414", "-0.0254891", "-0.0121505", "-1.63084e-05", "0.062149", "0.0690735", "-0.223064"],
                                 "ECalToMipCalibration": ["175.439"],
                                 "HCalToMipCalibration": ["45.6621"],
@@ -131,7 +142,7 @@ if CONFIG["CalorimeterIntegrationTimeWindow"] == "10ns":
 elif CONFIG["CalorimeterIntegrationTimeWindow"] == "400ns":
 
     MyDDMarlinPandora.Parameters |= {
-                               "PandoraSettingsXmlFile": ["PandoraSettingsCLD/PandoraSettingsDefault_400nsCalTimeWindow.xml"],
+                               "PandoraSettingsXmlFile": [f"{dir_path}/../PandoraSettingsCLD/PandoraSettingsDefault_400nsCalTimeWindow.xml"],
                                "SoftwareCompensationWeights": ["2.43375", "-0.0430951", "0.000244914", "-0.145478", "-0.00044577", "-8.37222e-05", "0.237484", "0.243491", "-0.0713701"],
                                "ECalToMipCalibration": ["175.439"],
                                "HCalToMipCalibration": ["49.7512"],
